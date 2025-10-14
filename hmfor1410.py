@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 def number_to_words(n):
     if n < 1 or n > 99:
         return None  # вне диапазона
@@ -30,4 +31,38 @@ else:
         print("Число должно быть в диапазоне от 1 до 99!")
     else:
         word = number_to_words(num)
+=======
+def number_to_words(n):
+    if n < 1 or n > 99:
+        return None  # вне диапазона
+
+    a = ["", "один", "два", "три", "четыре", "пять", "шесть", "семь", "восемь", "девять"]
+    b = ["десять", "одиннадцать", "двенадцать", "тринадцать", "четырнадцать",
+             "пятнадцать", "шестнадцать", "семнадцать", "восемнадцать", "девятнадцать"]
+    c = ["", "", "двадцать", "тридцать", "сорок", "пятьдесят", "шестьдесят", "семьдесят", "восемьдесят", "девяносто"]
+
+    if n < 10:
+        return a[n]
+    elif 10 <= n <= 19:
+        return b[n - 10]
+    else:
+        ten_part = c[n // 10]
+        one_part = a[n % 10]
+        if one_part:
+            return ten_part + " " + one_part
+        else:
+            return ten_part
+
+# Основная программа
+a = input("Введите число от 1 до 99: ").strip()
+
+if not a.isdigit():
+    print("Вы должны ввести число!")
+else:
+    num = int(a)
+    if num < 1 or num > 99:
+        print("Число должно быть в диапазоне от 1 до 99!")
+    else:
+        word = number_to_words(num)
+>>>>>>> c2e7443d967c3c0b4d6ffefd751cd719f6d4d409
         print(word)
