@@ -14,7 +14,7 @@ def extract_context_and_label(line):
         elif 'замо`к' in full_word.lower():
             label = 'noun_lock' # замОк - замок (устройство)
         else:
-            return None, None # Если не удалось определить
+            return None, None
 
         context = (before.strip() + " [ЗАМОК] " + after.strip()).strip()
         context_clean = re.sub(r'[`]', '', context)

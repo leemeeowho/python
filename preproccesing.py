@@ -1,16 +1,13 @@
-import pandas as pd
 import re
 from collections import Counter
+import nltk
+import pandas as pd
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-# Загрузка данных
 df = pd.read_csv('reviews.csv', sep='\t', on_bad_lines='skip', encoding='utf-8')
-
-# Загрузка стоп-слов из файла russian.txt
 with open('russian.txt', 'r', encoding='utf-8') as f:
     stop_words = set(word.strip().lower() for word in f.readlines() if word.strip())
 
-# Функции очистки
 def remove_punctuation(text):
     if isinstance(text, str):
         return re.sub(r'[^\w\s]', '', text)
@@ -62,7 +59,20 @@ df['review'] = df['review'].apply(remove_emojis)
 df['review'] = df['review'].apply(remove_urls)
 df['review'] = df['review'].apply(remove_html)
 
-# Удаление высокочастотных слов
+def tokenize_text(text):
+    if isinstance(text, str) and text.strip():
+        try:
+            # Пытаемся использовать NLTK для токенизации
+            tokens = nltk.word_tokenize(text, language='russian')
+        except LookupError:
+            tokens = text.split()
+        tokens = [token for token in tokens if token.strip() and len(token) > 1]
+        return tokens
+    return []
+
+# Создаем новую колонку с токенами
+df['tokens'] = df['review'].apply(tokenize_text)
+
 all_words = []
 for text in df['review'].dropna():
     words = text.split()
@@ -73,7 +83,6 @@ if all_words:
     top_10_words = [word for word, _ in word_counts.most_common(10)]
     df['review'] = df['review'].apply(lambda x: ' '.join([word for word in str(x).split() if word not in top_10_words]))
 
-# TF-IDF анализ и удаление редких/частых слов
 vectorizer = TfidfVectorizer(max_features=1000)
 tfidf_matrix = vectorizer.fit_transform(df['review'].fillna(''))
 
@@ -88,6 +97,4 @@ words_to_remove = rare_words.union(common_words)
 
 df['review'] = df['review'].apply(lambda x: ' '.join([word for word in str(x).split() if word not in words_to_remove]))
 df['review'] = df['review'].apply(clean_spaces)
-
-# Сохранение результата
 df.to_csv('processed_reviews.csv', index=False, encoding='utf-8')

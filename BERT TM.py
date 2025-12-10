@@ -13,13 +13,13 @@ texts = df['review'].tolist()
 
 embedding_model = SentenceTransformer("sentence-transformers/paraphrase-multilingual-MiniLM-L12-v2")
 topic_model = BERTopic(
-    language="multilingual",  # Поддержка русского языка
-    embedding_model=embedding_model,  # Используем специализированную модель
-    min_topic_size=15,  # Минимальный размер темы для большей стабильности
-    nr_topics='auto',  # Автоматическое слияние похожих тем
+    language="multilingual",
+    embedding_model=embedding_model,
+    min_topic_size=15,
+    nr_topics='auto',
     calculate_probabilities=False,
     verbose=True,
-    top_n_words=10  # Количество ключевых слов для каждой темы
+    top_n_words=10
 )
 
 topics, probs = topic_model.fit_transform(texts)
@@ -87,10 +87,8 @@ df['topic'] = topics
 topic_names = {row['Topic']: row['Name'] for _, row in topic_info.iterrows()}
 df['topic_name'] = df['topic'].map(topic_names)
 
-# Сохраняем основной результат
 df.to_csv('clustered_reviews_with_topics.csv', index=False, encoding='utf-8')
 
-# Сохраняем информацию о темах в отдельный файл
 topic_summary = []
 for topic_id in topic_info[topic_info['Topic'] != -1]['Topic'].head(10):
     words = topic_model.get_topic(topic_id)

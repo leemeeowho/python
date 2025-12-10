@@ -5,26 +5,22 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-# Загрузка данных
 df = pd.read_csv('processed_reviews.csv')
 df['review'] = df['review'].fillna('').astype(str)
 df = df[df['review'].str.strip() != '']
 
-# Преобразование текста в векторы
 tfidf_vectorizer = TfidfVectorizer(max_features=1000, min_df=5, max_df=0.95)
 tfidf_matrix = tfidf_vectorizer.fit_transform(df['review'])
 
 # Кластеризация K-means
-optimal_k = 5  # Фиксированное количество кластеров
+optimal_k = 5
 kmeans = KMeans(n_clusters=optimal_k, random_state=42, n_init=10)
 kmeans.fit(tfidf_matrix)
 df['cluster'] = kmeans.labels_
 
-# Визуализация с помощью PCA
 pca = PCA(n_components=2, random_state=42)
 pca_result = pca.fit_transform(tfidf_matrix.toarray())
 
-# Создание графика
 plt.figure(figsize=(10, 8))
 vis_df = pd.DataFrame({
     'x': pca_result[:, 0],
